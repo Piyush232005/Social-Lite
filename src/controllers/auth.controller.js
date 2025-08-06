@@ -1,5 +1,6 @@
 const userModel = require('../models/user.model');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 async function registerController(req, res) {
     const { username, password } = req.body;
@@ -11,7 +12,7 @@ async function registerController(req, res) {
 
     const users = new userModel({ 
         username, 
-        password 
+        password: await bcrypt.hash(password, 10) // ✅ Hash the password
     });
 
     await users.save(); // ✅ Save the user to DB
@@ -35,7 +36,7 @@ async function loginController(req, res) {
         return res.status(400).json({ message: 'User not found' });
     }
 
-    const isPasswordValid = user.password === password;
+    const isPasswordValid = await bcrypt.compare(password, user.password); // ✅ Compare hashed password
 
     if (!isPasswordValid) {
         return res.status(400).json({ message: 'Invalid password' });
