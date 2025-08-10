@@ -27,7 +27,7 @@ async function generateCaption(base64ImageFile) {
     }
   });
 
-  return response.text;
+  return response.text || "No caption generated";
 
 }
 
